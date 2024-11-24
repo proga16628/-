@@ -37,7 +37,12 @@
         button:hover {
             background-color: #45a049;
         }
+        #result img {
+            max-width: 100%;
+        }
     </style>
+    <!-- Підключення бібліотеки Pica для стиснення зображень -->
+    <script src="https://cdn.jsdelivr.net/npm/pica@8.0.1/dist/pica.min.js"></script>
 </head>
 <body>
 
@@ -45,7 +50,7 @@
     <h1>Welcome to the Image Compression Site!</h1>
     <p>Upload an image to compress it.</p>
     
-    <!-- Form to upload image -->
+    <!-- Форма для завантаження зображення -->
     <form id="uploadForm">
         <input type="file" id="imageInput" accept="image/*" required>
         <button type="submit">Compress Image</button>
@@ -71,16 +76,23 @@
             image.src = e.target.result;
             
             image.onload = function() {
-                // Here we could add code for compressing the image using JavaScript
-                alert("Image loaded. Implement compression here.");
+                // Створення канваса для стиснення
+                const canvas = document.createElement('canvas');
+                const pica = window.pica();
                 
-                // Display compressed image (just a placeholder for now)
-                const resultDiv = document.getElementById("result");
-                const compressedImage = document.createElement("img");
-                compressedImage.src = e.target.result; // Just show the original image for now
-                compressedImage.style.maxWidth = "100%";
-                resultDiv.innerHTML = ""; // Clear previous result
-                resultDiv.appendChild(compressedImage);
+                // Виконання стиснення
+                pica.resize(image, canvas)
+                    .then(function(result) {
+                        // Показуємо стиснуте зображення
+                        const resultDiv = document.getElementById("result");
+                        const compressedImage = document.createElement("img");
+                        compressedImage.src = canvas.toDataURL();
+                        resultDiv.innerHTML = ""; // Очищаємо попередній результат
+                        resultDiv.appendChild(compressedImage);
+                    })
+                    .catch(function(error) {
+                        alert("Compression failed: " + error);
+                    });
             };
         };
         
@@ -90,4 +102,3 @@
 
 </body>
 </html>
-
